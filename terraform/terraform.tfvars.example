@@ -1,0 +1,3 @@
+aws_region      = "us-east-1"
+create_iam_user = false   # AWS Academy Learner Lab blocks IAM users
+create_ec2      = false
