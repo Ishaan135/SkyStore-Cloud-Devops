@@ -9,6 +9,8 @@ function getAwsConfig() {
   const region = process.env.CONVEX_AWS_REGION;
   const accessKeyId = process.env.CONVEX_AWS_ACCESS_KEY_ID;
   const secretAccessKey = process.env.CONVEX_AWS_SECRET_ACCESS_KEY;
+  // Optional: needed for temporary credentials (e.g. AWS Academy Learner Lab)
+  const sessionToken = process.env.CONVEX_AWS_SESSION_TOKEN;
 
   if (!region || !accessKeyId || !secretAccessKey) {
     throw new Error("Missing AWS configuration environment variables");
@@ -19,6 +21,7 @@ function getAwsConfig() {
     credentials: {
       accessKeyId,
       secretAccessKey,
+      ...(sessionToken ? { sessionToken } : {}),
     },
   };
 }

@@ -21,3 +21,9 @@ variable "repo_url" {
   type        = string
   default     = "https://github.com/Samaksh912/SkyStore.git"
 }
+
+variable "create_iam_user" {
+  description = "Create a dedicated IAM user. Set false on AWS Academy Learner Lab (IAM user creation is blocked)."
+  type        = bool
+  default     = true
+}

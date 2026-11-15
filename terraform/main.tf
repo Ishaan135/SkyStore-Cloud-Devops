@@ -42,12 +42,14 @@ resource "aws_s3_bucket_cors_configuration" "files" {
 
 # ---------- IAM: least-privilege user used by the Convex backend ----------
 resource "aws_iam_user" "app" {
+  count = var.create_iam_user ? 1 : 0
   name = "${var.project_name}-convex-user"
 }
 
 resource "aws_iam_user_policy" "app" {
-  name = "${var.project_name}-s3-access"
-  user = aws_iam_user.app.name
+  count = var.create_iam_user ? 1 : 0
+  name  = "${var.project_name}-s3-access"
+  user  = aws_iam_user.app[0].name
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [{
@@ -59,7 +61,8 @@ resource "aws_iam_user_policy" "app" {
 }
 
 resource "aws_iam_access_key" "app" {
-  user = aws_iam_user.app.name
+  count = var.create_iam_user ? 1 : 0
+  user  = aws_iam_user.app[0].name
 }
 
 # ---------- EC2: Docker host running the app ----------
