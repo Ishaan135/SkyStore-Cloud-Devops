@@ -1,0 +1,46 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SkyStore DevOps Dashboard</title>
+<style>
+:root{--bg:#0b1220;--card:#131c31;--tx:#e8edf7;--mut:#8fa0c0;--ok:#2ecc71;--bad:#e5484d;--ac:#4f8cff}
+@media(prefers-color-scheme:light){:root{--bg:#f3f6fb;--card:#fff;--tx:#14203a;--mut:#5b6b8a}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--tx);font:16px system-ui,sans-serif;padding:24px 16px}
+.w{max-width:1000px;margin:auto}h1{margin:0 0 4px}p.s{color:var(--mut);margin:0 0 24px}
+.g{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
+.c{background:var(--card);border-radius:12px;padding:16px;border:1px solid #ffffff14}
+.c h3{margin:0 0 6px;font-size:17px}.c p{margin:0 0 10px;color:var(--mut);font-size:14px}
+a.b{display:inline-block;background:var(--ac);color:#fff;text-decoration:none;padding:6px 12px;border-radius:8px;font-size:14px;margin:2px 4px 2px 0}
+.d{display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--mut);margin-right:6px}
+.d.ok{background:var(--ok)}.d.bad{background:var(--bad)}
+h2{margin:28px 0 12px}pre{background:var(--card);padding:14px;border-radius:12px;overflow:auto;font-size:13px;border:1px solid #ffffff14}
+.flow{display:flex;flex-wrap:wrap;gap:8px;align-items:center}.flow span{background:var(--card);padding:8px 14px;border-radius:20px;border:1px solid #ffffff14}
+</style></head><body><div class="w">
+<h1>☁️ SkyStore — Cloud &amp; DevOps Project</h1>
+<p class="s">Secure cloud file vault · React + Convex + AWS S3 · deployed with Git, Jenkins, Docker &amp; Terraform on AWS</p>
+
+<div class="flow"><span>Git commit</span>→<span>Jenkins pipeline</span>→<span>Docker build + smoke test</span>→<span>Deploy container</span>→<span>AWS (Terraform: S3 + IAM + EC2)</span></div>
+
+<h2>Live services</h2>
+<div class="g">
+ <div class="c"><h3><i class="d" id="s-app"></i>SkyStore App</h3><p>Dockerized React app served by nginx (port 3000)</p><a class="b" href="http://localhost:3000" target="_blank">Open app</a></div>
+ <div class="c"><h3><i class="d" id="s-ci"></i>CI-deployed App</h3><p>Container deployed by the Jenkins pipeline (port 3001)</p><a class="b" href="http://localhost:3001" target="_blank">Open</a></div>
+ <div class="c"><h3><i class="d" id="s-jenkins"></i>Jenkins</h3><p>CI/CD server · login admin / admin</p><a class="b" href="http://localhost:8080/job/SkyStore-Pipeline/" target="_blank">Pipeline</a></div>
+ <div class="c"><h3><i class="d ok"></i>Git</h3><p>Source on GitHub, pipeline reads local clone</p><a class="b" href="https://github.com/Samaksh912/SkyStore" target="_blank">Repository</a></div>
+</div>
+
+<h2>The 4 required tools</h2>
+<div class="g">
+ <div class="c"><h3>1. AWS</h3><p>S3 bucket stores files via pre-signed URLs; IAM least-privilege user; EC2 host. All defined in Terraform.</p><a class="b" href="terraform/main.tf" target="_blank">main.tf</a></div>
+ <div class="c"><h3>2. Git</h3><p>Version control; Jenkins pulls each build from the Git repo.</p></div>
+ <div class="c"><h3>3. Jenkins</h3><p>Pipeline: Checkout → Build image → Smoke test → Deploy.</p><a class="b" href="Jenkinsfile" target="_blank">Jenkinsfile</a></div>
+ <div class="c"><h3>4. Docker + Terraform</h3><p>Multi-stage Dockerfile + docker-compose; Terraform provisions AWS infrastructure as code.</p><a class="b" href="Dockerfile" target="_blank">Dockerfile</a><a class="b" href="terraform/variables.tf" target="_blank">variables.tf</a></div>
+</div>
+
+<h2>Demo commands</h2>
+<pre>docker compose up -d --build     # app + Jenkins + dashboard
+docker ps                         # show running containers
+cd terraform &amp;&amp; terraform init &amp;&amp; terraform plan   # AWS infrastructure as code</pre>
+</div>
+<script>
+const chk=(id,url)=>fetch(url,{mode:'no-cors'}).then(()=>document.getElementById(id).className='d ok').catch(()=>document.getElementById(id).className='d bad');
+const run=()=>{chk('s-app','http://localhost:3000');chk('s-ci','http://localhost:3001');chk('s-jenkins','http://localhost:8080/login')};run();setInterval(run,5000);
+</script></body></html>

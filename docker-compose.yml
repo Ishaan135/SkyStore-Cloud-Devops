@@ -1,0 +1,44 @@
+name: skystore
+
+services:
+  # SkyStore web app (React + Vite served by nginx)
+  app:
+    build:
+      context: .
+      args:
+        VITE_CONVEX_URL: ${VITE_CONVEX_URL:-https://animated-swan-675.convex.cloud}
+    image: skystore:latest
+    container_name: skystore-app
+    ports: ["3000:80"]
+    restart: unless-stopped
+
+  # Jenkins CI/CD server (pipeline auto-created from ./Jenkinsfile)
+  jenkins:
+    build: ./jenkins
+    image: skystore-jenkins:latest
+    container_name: skystore-jenkins
+    user: root
+    ports: ["8080:8080"]
+    environment:
+      JAVA_OPTS: -Djenkins.install.runSetupWizard=false
+      VITE_CONVEX_URL: ${VITE_CONVEX_URL:-https://animated-swan-675.convex.cloud}
+    volumes:
+      - jenkins_home:/var/jenkins_home
+      - /var/run/docker.sock:/var/run/docker.sock
+      - .:/srv/skystore:ro
+    restart: unless-stopped
+
+  # Presentation dashboard for the demo
+  dashboard:
+    image: nginx:alpine
+    container_name: skystore-dashboard
+    ports: ["4000:80"]
+    volumes:
+      - ./demo/index.html:/usr/share/nginx/html/index.html:ro
+      - ./terraform:/usr/share/nginx/html/terraform:ro
+      - ./Jenkinsfile:/usr/share/nginx/html/Jenkinsfile:ro
+      - ./Dockerfile:/usr/share/nginx/html/Dockerfile:ro
+    restart: unless-stopped
+
+volumes:
+  jenkins_home:
