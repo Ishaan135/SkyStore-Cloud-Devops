@@ -3,49 +3,41 @@ resource "random_id" "suffix" {
   byte_length = 4
 }
 
-locals {
-  bucket_name = "${var.project_name}-files-${random_id.suffix.hex}"
+resource "aws_s3_bucket" "files" {
+  bucket = "${var.project_name}-files-${random_id.suffix.hex}"
+  tags   = { Project = var.project_name }
 }
 
-# The bucket is created through a CloudFormation stack managed by Terraform.
-# (AWS Academy Learner Lab's policy denies s3:GetBucketObjectLockConfiguration, which the
-# aws_s3_bucket resource always calls, so the native resource cannot be used there.)
-resource "aws_cloudformation_stack" "files" {
-  name = "${var.project_name}-s3"
-  template_body = jsonencode({
-    Resources = {
-      FilesBucket = {
-        Type = "AWS::S3::Bucket"
-        Properties = {
-          BucketName = local.bucket_name
-          VersioningConfiguration = { Status = "Enabled" }
-          BucketEncryption = {
-            ServerSideEncryptionConfiguration = [{
-              ServerSideEncryptionByDefault = { SSEAlgorithm = "AES256" }
-            }]
-          }
-          PublicAccessBlockConfiguration = {
-            BlockPublicAcls       = true
-            BlockPublicPolicy     = true
-            IgnorePublicAcls      = true
-            RestrictPublicBuckets = true
-          }
-          # Browser uploads use pre-signed PUT URLs, so CORS is required
-          CorsConfiguration = {
-            CorsRules = [{
-              AllowedMethods = ["GET", "PUT", "DELETE", "HEAD"]
-              AllowedOrigins = ["*"]
-              AllowedHeaders = ["*"]
-              ExposedHeaders = ["ETag"]
-              MaxAge         = 3000
-            }]
-          }
-          Tags = [{ Key = "Project", Value = var.project_name }]
-        }
-      }
-    }
-    Outputs = { BucketName = { Value = { Ref = "FilesBucket" } } }
-  })
+resource "aws_s3_bucket_public_access_block" "files" {
+  bucket                  = aws_s3_bucket.files.id
+  block_public_acls       = true
+  block_public_policy     = true
+  ignore_public_acls      = true
+  restrict_public_buckets = true
+}
+
+resource "aws_s3_bucket_versioning" "files" {
+  bucket = aws_s3_bucket.files.id
+  versioning_configuration { status = "Enabled" }
+}
+
+resource "aws_s3_bucket_server_side_encryption_configuration" "files" {
+  bucket = aws_s3_bucket.files.id
+  rule {
+    apply_server_side_encryption_by_default { sse_algorithm = "AES256" }
+  }
+}
+
+# Browser uploads use pre-signed PUT URLs, so CORS is required
+resource "aws_s3_bucket_cors_configuration" "files" {
+  bucket = aws_s3_bucket.files.id
+  cors_rule {
+    allowed_methods = ["GET", "PUT", "DELETE", "HEAD"]
+    allowed_origins = ["*"]
+    allowed_headers = ["*"]
+    expose_headers  = ["ETag"]
+    max_age_seconds = 3000
+  }
 }
 
 # ---------- IAM: least-privilege user used by the Convex backend ----------
@@ -63,7 +55,7 @@ resource "aws_iam_user_policy" "app" {
     Statement = [{
       Effect   = "Allow"
       Action   = ["s3:PutObject", "s3:GetObject", "s3:DeleteObject"]
-      Resource = "arn:aws:s3:::${local.bucket_name}/*"
+      Resource = "${aws_s3_bucket.files.arn}/*"
     }]
   })
 }
