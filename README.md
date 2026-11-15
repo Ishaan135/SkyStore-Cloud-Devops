@@ -449,3 +449,8 @@ SkyStore/
 Built with ❤️ using **Convex**, **AWS S3**, **React**, **Docker**, and **Jenkins**
 
 </div>
+
+---
+## Cloud & DevOps Demo (local)
+Run `start-demo.bat` (or the desktop shortcut). Tools: **AWS** (S3/IAM/EC2 via `terraform/`), **Git**, **Jenkins** (`Jenkinsfile`, http://localhost:8080, admin/admin), **Docker** (`Dockerfile`, `docker-compose.yml`) and **Terraform**. Dashboard: http://localhost:4000, app: http://localhost:3000. Stop with `stop-demo.bat`.
+
