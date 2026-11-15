@@ -20,6 +20,9 @@ if (j.getItem('SkyStore-Pipeline') == null) {
   scm.branches = [new BranchSpec('*/main')]
   job.definition = new CpsScmFlowDefinition(scm, 'Jenkinsfile')
   job.save()
+}
+var job = j.getItem('SkyStore-Pipeline')
+if (job.getLastBuild() == null) {
   job.scheduleBuild2(5)   // first build runs automatically
 }
 j.save()

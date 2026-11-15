@@ -1,6 +1,6 @@
 FROM jenkins/jenkins:lts-jdk17
 USER root
-RUN apt-get update && apt-get install -y --no-install-recommends docker.io curl && rm -rf /var/lib/apt/lists/* \
+RUN apt-get update && apt-get install -y --no-install-recommends docker-cli curl && rm -rf /var/lib/apt/lists/* \
  && git config --system --add safe.directory '*'
 USER jenkins
 COPY plugins.txt /usr/share/jenkins/ref/plugins.txt
