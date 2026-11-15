@@ -1,6 +1,6 @@
-# Copies the AWS Learner Lab credentials (profile "learnerlab") into your Convex deployment.
+# Copies the AWS Learner Lab credentials (profile "personal") into your Convex deployment.
 # Run this again each time you restart the lab (credentials expire every ~4 hours).
-param([string]$Bucket = "skystore-files-d4ae84cb", [string]$Profile = "learnerlab")
+param([string]$Bucket = "skystore-files-baf29a07", [string]$Profile = "personal")
 Set-Location $PSScriptRoot
 $c = aws configure export-credentials --profile $Profile --format process | ConvertFrom-Json
 npx convex env set CONVEX_AWS_REGION us-east-1
