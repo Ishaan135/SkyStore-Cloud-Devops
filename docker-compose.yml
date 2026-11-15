@@ -6,7 +6,7 @@ services:
     build:
       context: .
       args:
-        VITE_CONVEX_URL: ${VITE_CONVEX_URL:-https://animated-swan-675.convex.cloud}
+        VITE_CONVEX_URL: ${VITE_CONVEX_URL:-https://shiny-stingray-832.convex.cloud}
     image: skystore:latest
     container_name: skystore-app
     ports: ["3000:80"]
@@ -21,7 +21,7 @@ services:
     ports: ["8080:8080"]
     environment:
       JAVA_OPTS: -Djenkins.install.runSetupWizard=false -Dhudson.plugins.git.GitSCM.ALLOW_LOCAL_CHECKOUT=true
-      VITE_CONVEX_URL: ${VITE_CONVEX_URL:-https://animated-swan-675.convex.cloud}
+      VITE_CONVEX_URL: ${VITE_CONVEX_URL:-https://shiny-stingray-832.convex.cloud}
     volumes:
       - jenkins_home:/var/jenkins_home
       - /var/run/docker.sock:/var/run/docker.sock

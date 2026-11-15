@@ -8,7 +8,7 @@ pipeline {
         CONTAINER_NAME = 'skystore-app-ci'
         CI_NETWORK     = 'skystore_default'
         // Convex deployment URL (set as a Jenkins global env var; falls back to project default)
-        VITE_CONVEX_URL = "${env.VITE_CONVEX_URL ?: 'https://animated-swan-675.convex.cloud'}"
+        VITE_CONVEX_URL = "${env.VITE_CONVEX_URL ?: 'https://shiny-stingray-832.convex.cloud'}"
     }
 
     stages {
