@@ -107,6 +107,7 @@ resource "aws_instance" "app" {
   instance_type          = var.instance_type
   vpc_security_group_ids = [aws_security_group.web[0].id]
   tags                   = { Name = "${var.project_name}-app" }
+  user_data_replace_on_change = true
 
   user_data = <<-EOT
     #!/bin/bash

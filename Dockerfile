@@ -4,10 +4,10 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm install --no-audit --no-fund
 COPY . .
-# Convex deployment URL is baked in at build time by Vite
+# Convex deployment URL is baked in at build time by Vite.
+# If no build arg is given, fall back to the value in .env (an empty ARG would override it).
 ARG VITE_CONVEX_URL
-ENV VITE_CONVEX_URL=${VITE_CONVEX_URL}
-RUN npm run build
+RUN if [ -z "$VITE_CONVEX_URL" ]; then unset VITE_CONVEX_URL; fi; npm run build
 
 # ---------- Stage 2: serve with nginx ----------
 FROM nginx:alpine
